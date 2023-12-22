@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: backendaddress-ingress
+  namespace: dev
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: addressmanager-api.mannit.co
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: address-backend
+            port:
+              number: 8003

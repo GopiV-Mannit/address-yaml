@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: dev
+  name: address-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: address-backend
+  template:
+    metadata:
+      labels:
+        name: address-backend
+        app: address-backend
+        version: 1.0.0
+    spec:
+      nodeName: mannit-4gb-nbg1-1
+      containers:
+      - args:
+         - sh
+         - -c
+         - cd /usr/src/app && npm install && npm run server
+        image: node:alpine
+        name: address-backend
+        ports:
+        - containerPort: 8000
+          name: paxeladdress-1
+        resources:
+          requests:
+            cpu: 300m
+            memory: 200Mi
+        volumeMounts:
+        - mountPath: /usr/src/app
+          name: testing-pv-claim
+        workingDir: /usr/src/app
+      restartPolicy: Always
+      volumes:
+      - name: testing-pv-claim
+        persistentVolumeClaim:
+          claimName: testing-pv-claim
+
+
+
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: dev
+  name: address-backend
+spec:
+  type: NodePort
+  #clusterIP: 10.200.130.66
+  ports:
+  - name: "paxeladdress-1"
+    port: 8000
+    targetPort: 8000
+    #nodePort: 32202
+  selector:
+    app: address-backend
